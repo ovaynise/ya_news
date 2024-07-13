@@ -1,6 +1,9 @@
 from django.urls import reverse
-import pytest
 from django.conf import settings
+from http import HTTPStatus
+
+import pytest
+
 from news.models import News
 from news.forms import CommentForm
 
@@ -10,12 +13,12 @@ def test_news_count(client, many_news):
     """Количество новостей на главной странице — не более 10."""
     url = reverse('news:home')
     response = client.get(url)
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     object_list = response.context.get('object_list', [])
-    news_count = len(object_list)
+    news_count = object_list.count()
     assert news_count == min(len(many_news), settings.NEWS_COUNT_ON_HOME_PAGE)
     all_news_count = News.objects.count()
-    assert all_news_count == 11
+    assert all_news_count == settings.NEWS_COUNT_ON_HOME_PAGE + 1
 
 
 @pytest.mark.django_db

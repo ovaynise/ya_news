@@ -1,15 +1,19 @@
 from django.urls import reverse
-import pytest
-from news.models import Comment
 from pytest_django.asserts import assertRedirects
-from news.forms import BAD_WORDS
 from http import HTTPStatus
+
+import pytest
+
+from news.models import Comment
+from news.forms import BAD_WORDS
 
 
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, news, form_data):
     """Анонимный пользователь не может отправить комментарий."""
     url = reverse('news:detail', args=(news.id,))
+    comments_count_before_post = Comment.objects.count()
+    assert comments_count_before_post == 0
     client.post(url, data=form_data)
     comments_count = Comment.objects.count()
     assert comments_count == 0
@@ -52,7 +56,7 @@ def test_author_can_edit_comment(author_client, form_data, comment, news):
     url_to_comments = news_url + '#comments'
     response = author_client.post(edit_url, data=form_data)
     assertRedirects(response, url_to_comments)
-    comment.refresh_from_db()
+    comment = Comment.objects.get(pk=comment.pk)
     assert comment.text == 'Новый текст'
 
 

@@ -1,39 +1,44 @@
-import pytest
 from django.test.client import Client
-from news.models import News, Comment
 from django.conf import settings
-from datetime import datetime, timedelta
 from django.utils import timezone
+from datetime import datetime, timedelta
+
+import pytest
+
+from news.models import News, Comment
 
 
 @pytest.fixture
-# Используем встроенную фикстуру для модели пользователей django_user_model.
 def author(django_user_model):
+    """Создаем модель автора."""
     return django_user_model.objects.create(username='Автор')
 
 
 @pytest.fixture
 def not_author(django_user_model):
+    """Создаем модель авторизованого пользователя."""
     return django_user_model.objects.create(username='Не автор')
 
 
 @pytest.fixture
-def author_client(author):  # Вызываем фикстуру автора.
-    # Создаём новый экземпляр клиента, чтобы не менять глобальный.
+def author_client(author):
+    """Создаем клиент автора."""
     client = Client()
-    client.force_login(author)  # Логиним автора в клиенте.
+    client.force_login(author)
     return client
 
 
 @pytest.fixture
 def not_author_client(not_author):
+    """Создаем клиент авторизованного пользователя."""
     client = Client()
-    client.force_login(not_author)  # Логиним обычного пользователя в клиенте.
+    client.force_login(not_author)
     return client
 
 
 @pytest.fixture
 def news():
+    """Создаем объект одной новости."""
     news = News.objects.create(
         title='Заголовок',
         text='Текст новости 1',
@@ -43,6 +48,7 @@ def news():
 
 @pytest.fixture
 def comment(author, news):
+    """Создаем объект комментария."""
     comment = Comment.objects.create(
         text='Текст комментария 1',
         news=news,
@@ -53,6 +59,7 @@ def comment(author, news):
 
 @pytest.fixture
 def form_data():
+    """Создаем словарь с текстом нового комментария."""
     return {
         'text': 'Новый текст',
     }
@@ -60,6 +67,7 @@ def form_data():
 
 @pytest.fixture
 def many_news():
+    """Создаем больше 10 объектов новостей."""
     today = datetime.today()
     many_news = News.objects.bulk_create(
         News(
@@ -74,6 +82,7 @@ def many_news():
 
 @pytest.fixture
 def comments(news, author):
+    """Создаем 10 объектов комментариев к одной новости."""
     now = timezone.now()
     comments = []
     for index in range(10):
