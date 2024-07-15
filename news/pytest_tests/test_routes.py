@@ -27,7 +27,7 @@ def test_news_detail_availability_for_anonymous_user(client, news):
     Страница отдельной новости доступна
     анонимному пользователю.
     """
-    url = reverse('news:detail', kwargs={'pk': 1})
+    url = reverse('news:detail', kwargs={'pk': news.id})
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
 
