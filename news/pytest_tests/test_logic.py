@@ -104,7 +104,7 @@ def test_user_cant_delete_comment_of_another_user(
 ):
     """
     Авторизованный пользователь не может
-    удалять чужие комментарии.
+    удалять чужие комментарии.c
     """
     delete_url = reverse('news:delete', args=(comment.id,))
     comments_count_before_delete = Comment.objects.count()
